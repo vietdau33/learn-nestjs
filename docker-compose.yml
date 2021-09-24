@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: nestjs_app
+    image: nestjs-app:1.0.0
+    build:
+      context: ./sort-app
+      target: development
+      dockerfile: ./Dockerfile
+    command: npm run start:dev
+    ports:
+      - 3000:3000
+      - 9229:9229
+    networks:
+      - nesjs-network
+    volumes:
+      - ./sort-app:/usr/src/app
+    restart: unless-stopped
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: cdmllove
+    volumes:
+      - ./mysql:/var/lib/mysql
+    networks:
+      - nesjs-network
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8001:8080
+    networks:
+      - nesjs-network
+
+networks:
+  nesjs-network:
